@@ -1,0 +1,1312 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>MJEED STORE | متجر الاشتراكات الرقمية</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;600;700;900&family=Bebas+Neue&display=swap" rel="stylesheet" />
+  <style>
+    /* ─── CSS VARIABLES ─────────────────────────────── */
+    :root {
+      --red:        #E50914;
+      --red-dim:    #B20710;
+      --red-glow:   rgba(229,9,20,.35);
+      --bg:         #0A0A0A;
+      --surface:    #111111;
+      --surface2:   #181818;
+      --border:     rgba(255,255,255,.07);
+      --text:       #F0F0F0;
+      --muted:      #888;
+      --gold:       #F5C518;
+      --green:      #1DB954;
+      --radius:     12px;
+      --font:       'Cairo', sans-serif;
+    }
+
+    /* ─── RESET & BASE ──────────────────────────────── */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+    body {
+      font-family: var(--font);
+      background: var(--bg);
+      color: var(--text);
+      overflow-x: hidden;
+      line-height: 1.6;
+    }
+    a { text-decoration: none; color: inherit; }
+    img { max-width: 100%; display: block; }
+    button, .btn { cursor: pointer; font-family: var(--font); border: none; }
+    ul { list-style: none; }
+
+    /* ─── SCROLLBAR ─────────────────────────────────── */
+    ::-webkit-scrollbar { width: 6px; }
+    ::-webkit-scrollbar-track { background: var(--bg); }
+    ::-webkit-scrollbar-thumb { background: var(--red); border-radius: 3px; }
+
+    /* ─── NOISE OVERLAY ─────────────────────────────── */
+    body::before {
+      content: '';
+      position: fixed; inset: 0;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='200' height='200' filter='url(%23n)' opacity='.04'/%3E%3C/svg%3E");
+      pointer-events: none; z-index: 9999; opacity: .4;
+    }
+
+    /* ─── UTILITY CLASSES ───────────────────────────── */
+    .container { max-width: 1200px; margin: 0 auto; padding: 0 20px; }
+    .section { padding: 80px 0; }
+    .section-title {
+      font-size: clamp(1.6rem, 4vw, 2.4rem);
+      font-weight: 900;
+      text-align: center;
+      margin-bottom: 48px;
+      position: relative;
+    }
+    .section-title span { color: var(--red); }
+    .section-title::after {
+      content: '';
+      display: block;
+      width: 60px; height: 3px;
+      background: var(--red);
+      margin: 12px auto 0;
+      border-radius: 2px;
+    }
+    .badge {
+      display: inline-block;
+      padding: 3px 10px;
+      border-radius: 20px;
+      font-size: .7rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: .05em;
+    }
+    .badge-red   { background: var(--red);   color: #fff; }
+    .badge-gold  { background: var(--gold);  color: #000; }
+    .badge-green { background: var(--green); color: #000; }
+
+    /* ─── BUTTONS ───────────────────────────────────── */
+    .btn {
+      display: inline-flex; align-items: center; gap: 8px;
+      padding: 12px 28px; border-radius: var(--radius);
+      font-size: .95rem; font-weight: 700;
+      transition: all .25s;
+    }
+    .btn-red {
+      background: var(--red);
+      color: #fff;
+      box-shadow: 0 0 20px var(--red-glow);
+    }
+    .btn-red:hover {
+      background: var(--red-dim);
+      transform: translateY(-2px);
+      box-shadow: 0 4px 30px var(--red-glow);
+    }
+    .btn-outline {
+      background: transparent;
+      color: var(--text);
+      border: 1px solid var(--border);
+    }
+    .btn-outline:hover {
+      border-color: var(--red);
+      color: var(--red);
+    }
+    .btn-whatsapp {
+      background: #25D366;
+      color: #fff;
+      width: 100%;
+      justify-content: center;
+      padding: 13px;
+      font-size: 1rem;
+      border-radius: 8px;
+      margin-top: 8px;
+      box-shadow: 0 0 16px rgba(37,211,102,.3);
+    }
+    .btn-whatsapp:hover {
+      background: #128C7E;
+      transform: translateY(-1px);
+      box-shadow: 0 4px 20px rgba(37,211,102,.4);
+    }
+
+    /* ─── PAGE ROUTER ───────────────────────────────── */
+    .page { display: none; animation: fadeIn .35s ease; }
+    .page.active { display: block; }
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+    /* ─── HEADER ────────────────────────────────────── */
+    header {
+      position: sticky; top: 0; z-index: 100;
+      background: rgba(10,10,10,.92);
+      backdrop-filter: blur(14px);
+      border-bottom: 1px solid var(--border);
+    }
+    .header-inner {
+      display: flex; align-items: center; justify-content: space-between;
+      height: 68px;
+    }
+    .logo {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 1.7rem;
+      letter-spacing: .08em;
+      color: var(--text);
+    }
+    .logo span { color: var(--red); }
+    nav { display: flex; gap: 6px; }
+    nav a {
+      padding: 7px 14px; border-radius: 8px;
+      font-size: .9rem; font-weight: 600;
+      color: var(--muted);
+      transition: all .2s;
+    }
+    nav a:hover, nav a.active {
+      color: var(--text);
+      background: var(--surface2);
+    }
+    nav a.active { color: var(--red); }
+    .header-actions { display: flex; gap: 10px; align-items: center; }
+    .whatsapp-btn-sm {
+      display: flex; align-items: center; gap: 6px;
+      background: #25D366; color: #fff;
+      padding: 8px 16px; border-radius: 8px;
+      font-size: .85rem; font-weight: 700;
+      transition: all .2s;
+    }
+    .whatsapp-btn-sm:hover { background: #128C7E; }
+    .menu-toggle {
+      display: none; background: var(--surface2);
+      border: 1px solid var(--border); color: var(--text);
+      padding: 8px 12px; border-radius: 8px; font-size: 1.1rem;
+    }
+    .mobile-nav {
+      display: none; flex-direction: column; gap: 4px;
+      background: var(--surface); border-bottom: 1px solid var(--border);
+      padding: 12px 20px;
+    }
+    .mobile-nav a {
+      padding: 10px 14px; border-radius: 8px;
+      font-weight: 600; color: var(--muted);
+      transition: all .2s;
+    }
+    .mobile-nav a:hover, .mobile-nav a.active { color: var(--red); background: var(--surface2); }
+    .mobile-nav.open { display: flex; }
+
+    /* ─── HERO ──────────────────────────────────────── */
+    .hero {
+      position: relative;
+      min-height: 88vh;
+      display: flex; align-items: center;
+      overflow: hidden;
+    }
+    .hero-bg {
+      position: absolute; inset: 0;
+      background: radial-gradient(ellipse 80% 60% at 50% 50%, rgba(229,9,20,.14) 0%, transparent 70%),
+                  linear-gradient(160deg, #0A0A0A 40%, #180808 100%);
+    }
+    .hero-grid {
+      position: absolute; inset: 0;
+      background-image: linear-gradient(var(--border) 1px, transparent 1px),
+                        linear-gradient(90deg, var(--border) 1px, transparent 1px);
+      background-size: 60px 60px;
+      mask-image: radial-gradient(ellipse 70% 70% at 50% 50%, black, transparent);
+    }
+    .hero-content {
+      position: relative; z-index: 2;
+      text-align: center;
+      max-width: 760px; margin: 0 auto;
+      padding: 60px 20px;
+    }
+    .hero-eyebrow {
+      display: inline-flex; align-items: center; gap: 8px;
+      background: rgba(229,9,20,.12);
+      border: 1px solid rgba(229,9,20,.3);
+      padding: 6px 16px; border-radius: 20px;
+      font-size: .8rem; font-weight: 700;
+      color: var(--red); margin-bottom: 24px;
+      letter-spacing: .06em; text-transform: uppercase;
+    }
+    .hero-title {
+      font-size: clamp(2.4rem, 7vw, 5rem);
+      font-weight: 900;
+      line-height: 1.1;
+      margin-bottom: 20px;
+    }
+    .hero-title .accent { color: var(--red); }
+    .hero-subtitle {
+      font-size: clamp(1rem, 2.5vw, 1.25rem);
+      color: var(--muted);
+      margin-bottom: 36px;
+      max-width: 520px; margin-left: auto; margin-right: auto;
+    }
+    .hero-cta { display: flex; gap: 14px; justify-content: center; flex-wrap: wrap; }
+    .hero-stats {
+      display: flex; justify-content: center; gap: 40px;
+      margin-top: 56px; flex-wrap: wrap;
+    }
+    .stat { text-align: center; }
+    .stat-num {
+      font-size: 2rem; font-weight: 900; color: var(--red);
+      font-family: 'Bebas Neue', sans-serif; letter-spacing: .04em;
+    }
+    .stat-label { font-size: .8rem; color: var(--muted); margin-top: 2px; }
+    .scroll-indicator {
+      position: absolute; bottom: 28px; left: 50%; transform: translateX(-50%);
+      display: flex; flex-direction: column; align-items: center; gap: 6px;
+      color: var(--muted); font-size: .75rem; z-index: 2;
+      animation: bounce 2s infinite;
+    }
+    @keyframes bounce { 0%,100% { transform: translateX(-50%) translateY(0); } 50% { transform: translateX(-50%) translateY(6px); } }
+
+    /* ─── MARQUEE ───────────────────────────────────── */
+    .marquee-wrap {
+      overflow: hidden;
+      background: var(--surface);
+      border-top: 1px solid var(--border);
+      border-bottom: 1px solid var(--border);
+      padding: 14px 0;
+    }
+    .marquee-track {
+      display: flex; gap: 48px;
+      animation: marquee 18s linear infinite;
+      width: max-content;
+    }
+    .marquee-item {
+      display: flex; align-items: center; gap: 10px;
+      font-size: .85rem; font-weight: 600; color: var(--muted);
+      white-space: nowrap;
+    }
+    .marquee-item svg { flex-shrink: 0; }
+    @keyframes marquee { from { transform: translateX(0); } to { transform: translateX(-50%); } }
+
+    /* ─── FEATURES STRIP ────────────────────────────── */
+    .features-strip {
+      display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 1px; background: var(--border);
+      border-top: 1px solid var(--border);
+      border-bottom: 1px solid var(--border);
+    }
+    .feature-item {
+      background: var(--surface);
+      padding: 28px 24px;
+      display: flex; align-items: center; gap: 14px;
+      transition: background .2s;
+    }
+    .feature-item:hover { background: var(--surface2); }
+    .feature-icon {
+      width: 44px; height: 44px; border-radius: 10px;
+      background: rgba(229,9,20,.12);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1.2rem; flex-shrink: 0;
+    }
+    .feature-text h4 { font-size: .95rem; font-weight: 700; }
+    .feature-text p { font-size: .78rem; color: var(--muted); margin-top: 2px; }
+
+    /* ─── PRODUCT CARDS ─────────────────────────────── */
+    .products-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+      gap: 20px;
+    }
+    .card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      overflow: hidden;
+      transition: transform .25s, border-color .25s, box-shadow .25s;
+      position: relative;
+    }
+    .card:hover {
+      transform: translateY(-4px);
+      border-color: rgba(229,9,20,.4);
+      box-shadow: 0 8px 32px rgba(229,9,20,.15);
+    }
+    .card-img {
+      height: 170px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 4rem;
+      position: relative; overflow: hidden;
+    }
+    .card-img-overlay {
+      position: absolute; inset: 0;
+      background: radial-gradient(circle at 50% 120%, var(--card-color, rgba(229,9,20,.3)) 0%, transparent 70%);
+    }
+    .card-body { padding: 18px; }
+    .card-top { display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px; }
+    .card-name { font-size: 1rem; font-weight: 700; }
+    .card-desc { font-size: .8rem; color: var(--muted); margin-bottom: 12px; line-height: 1.5; }
+    .card-price-row { display: flex; align-items: baseline; gap: 8px; margin-bottom: 4px; }
+    .card-price { font-size: 1.5rem; font-weight: 900; color: var(--red); }
+    .card-price-unit { font-size: .78rem; color: var(--muted); }
+    .card-old-price { font-size: .85rem; color: var(--muted); text-decoration: line-through; }
+    .card-stars { color: var(--gold); font-size: .85rem; margin-top: 6px; }
+    .card-badge { position: absolute; top: 12px; right: 12px; }
+
+    /* ─── FILTER TABS ───────────────────────────────── */
+    .filter-tabs {
+      display: flex; gap: 8px; flex-wrap: wrap;
+      margin-bottom: 32px;
+      justify-content: center;
+    }
+    .filter-tab {
+      padding: 8px 20px; border-radius: 20px;
+      font-size: .88rem; font-weight: 700;
+      border: 1px solid var(--border);
+      background: var(--surface); color: var(--muted);
+      transition: all .2s;
+    }
+    .filter-tab:hover, .filter-tab.active {
+      background: var(--red); color: #fff;
+      border-color: var(--red);
+      box-shadow: 0 0 16px var(--red-glow);
+    }
+
+    /* ─── OFFERS BANNER ─────────────────────────────── */
+    .offers-banner {
+      background: linear-gradient(135deg, #1a0000, #0d0000);
+      border: 1px solid rgba(229,9,20,.25);
+      border-radius: var(--radius);
+      padding: 32px;
+      display: flex; align-items: center; justify-content: space-between;
+      gap: 20px; flex-wrap: wrap;
+      position: relative; overflow: hidden;
+      margin-bottom: 60px;
+    }
+    .offers-banner::before {
+      content: '';
+      position: absolute; inset: 0;
+      background: radial-gradient(ellipse 60% 80% at 0% 50%, rgba(229,9,20,.15), transparent);
+    }
+    .offers-text { position: relative; z-index: 1; }
+    .offers-text h3 { font-size: 1.5rem; font-weight: 900; }
+    .offers-text p { color: var(--muted); margin-top: 6px; font-size: .9rem; }
+    .offers-tag {
+      position: absolute; top: -10px; right: 30px; z-index: 1;
+      background: var(--red); color: #fff;
+      font-size: .7rem; font-weight: 700;
+      padding: 4px 14px; border-radius: 20px;
+      letter-spacing: .06em;
+    }
+
+    /* ─── WARRANTY PAGE ─────────────────────────────── */
+    .warranty-grid {
+      display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 20px; margin-bottom: 40px;
+    }
+    .warranty-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 28px;
+      transition: border-color .2s;
+    }
+    .warranty-card:hover { border-color: var(--red); }
+    .warranty-icon { font-size: 2.5rem; margin-bottom: 14px; }
+    .warranty-card h3 { font-size: 1.1rem; font-weight: 700; margin-bottom: 10px; }
+    .warranty-card p { font-size: .88rem; color: var(--muted); line-height: 1.7; }
+    .terms-box {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 32px;
+    }
+    .terms-box h3 { font-size: 1.2rem; font-weight: 700; margin-bottom: 20px; color: var(--red); }
+    .terms-list { display: flex; flex-direction: column; gap: 12px; }
+    .term-item {
+      display: flex; gap: 12px;
+      padding: 14px 16px;
+      background: var(--surface2);
+      border-radius: 8px;
+      border-right: 3px solid var(--red);
+      font-size: .88rem; line-height: 1.6;
+      color: var(--muted);
+    }
+    .term-num {
+      color: var(--red); font-weight: 900;
+      flex-shrink: 0; font-size: 1rem;
+    }
+
+    /* ─── PAYMENT PAGE ──────────────────────────────── */
+    .payment-cards {
+      display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 20px; margin-bottom: 40px;
+    }
+    .payment-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 28px 24px;
+      text-align: center;
+      transition: all .25s;
+    }
+    .payment-card:hover {
+      border-color: var(--red);
+      transform: translateY(-3px);
+      box-shadow: 0 8px 28px rgba(229,9,20,.1);
+    }
+    .payment-logo { font-size: 2.8rem; margin-bottom: 14px; }
+    .payment-card h3 { font-size: 1.2rem; font-weight: 700; margin-bottom: 8px; }
+    .payment-card p { font-size: .85rem; color: var(--muted); line-height: 1.6; }
+    .payment-steps {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 32px;
+    }
+    .payment-steps h3 { font-size: 1.2rem; font-weight: 700; margin-bottom: 24px; color: var(--red); }
+    .step-list { display: flex; flex-direction: column; gap: 16px; }
+    .step {
+      display: flex; gap: 16px; align-items: flex-start;
+    }
+    .step-num {
+      width: 36px; height: 36px; border-radius: 50%;
+      background: rgba(229,9,20,.15);
+      border: 1px solid rgba(229,9,20,.3);
+      color: var(--red); font-weight: 900;
+      display: flex; align-items: center; justify-content: center;
+      flex-shrink: 0; font-size: .9rem;
+    }
+    .step-text h4 { font-size: .95rem; font-weight: 700; }
+    .step-text p { font-size: .82rem; color: var(--muted); margin-top: 3px; }
+
+    /* ─── CONTACT PAGE ──────────────────────────────── */
+    .contact-grid {
+      display: grid; grid-template-columns: 1fr 1fr;
+      gap: 32px;
+    }
+    .contact-info { display: flex; flex-direction: column; gap: 16px; }
+    .contact-item {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 22px;
+      display: flex; align-items: center; gap: 16px;
+      transition: border-color .2s;
+    }
+    .contact-item:hover { border-color: var(--red); }
+    .contact-item-icon {
+      width: 48px; height: 48px; border-radius: 10px;
+      background: rgba(229,9,20,.12);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1.4rem; flex-shrink: 0;
+    }
+    .contact-item h4 { font-size: .9rem; font-weight: 700; }
+    .contact-item p { font-size: .85rem; color: var(--muted); margin-top: 3px; }
+    .contact-form-box {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 32px;
+    }
+    .contact-form-box h3 { font-size: 1.3rem; font-weight: 700; margin-bottom: 24px; }
+    .form-group { margin-bottom: 16px; }
+    .form-group label { display: block; font-size: .85rem; font-weight: 600; margin-bottom: 6px; color: var(--muted); }
+    .form-group input, .form-group textarea, .form-group select {
+      width: 100%;
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 12px 14px;
+      color: var(--text);
+      font-family: var(--font);
+      font-size: .9rem;
+      transition: border-color .2s;
+      outline: none;
+      resize: vertical;
+    }
+    .form-group input:focus, .form-group textarea:focus, .form-group select:focus {
+      border-color: var(--red);
+      box-shadow: 0 0 0 3px rgba(229,9,20,.1);
+    }
+    .form-group select option { background: var(--surface2); }
+
+    /* ─── TESTIMONIALS ──────────────────────────────── */
+    .testimonials-grid {
+      display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+      gap: 20px;
+    }
+    .testimonial {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 22px;
+    }
+    .testimonial-stars { color: var(--gold); margin-bottom: 10px; font-size: .9rem; }
+    .testimonial-text { font-size: .88rem; color: var(--muted); line-height: 1.7; margin-bottom: 16px; }
+    .testimonial-author { display: flex; align-items: center; gap: 10px; }
+    .testimonial-avatar {
+      width: 38px; height: 38px; border-radius: 50%;
+      background: rgba(229,9,20,.2);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1rem;
+    }
+    .testimonial-name { font-size: .88rem; font-weight: 700; }
+    .testimonial-role { font-size: .75rem; color: var(--muted); }
+
+    /* ─── FOOTER ────────────────────────────────────── */
+    footer {
+      background: var(--surface);
+      border-top: 1px solid var(--border);
+      padding: 48px 0 0;
+    }
+    .footer-grid {
+      display: grid; grid-template-columns: 1.5fr 1fr 1fr 1fr;
+      gap: 32px; margin-bottom: 40px;
+    }
+    .footer-brand .logo { font-size: 1.5rem; margin-bottom: 14px; }
+    .footer-brand p { font-size: .85rem; color: var(--muted); line-height: 1.7; max-width: 240px; }
+    .footer-col h4 { font-size: .95rem; font-weight: 700; margin-bottom: 16px; }
+    .footer-col a {
+      display: block; font-size: .85rem; color: var(--muted);
+      margin-bottom: 10px; transition: color .2s;
+    }
+    .footer-col a:hover { color: var(--red); }
+    .footer-socials { display: flex; gap: 10px; margin-top: 16px; }
+    .social-btn {
+      width: 36px; height: 36px; border-radius: 8px;
+      background: var(--surface2); border: 1px solid var(--border);
+      display: flex; align-items: center; justify-content: center;
+      font-size: .9rem; transition: all .2s;
+    }
+    .social-btn:hover { background: var(--red); border-color: var(--red); }
+    .footer-bottom {
+      border-top: 1px solid var(--border);
+      padding: 18px 0;
+      display: flex; align-items: center; justify-content: space-between;
+      font-size: .8rem; color: var(--muted);
+      flex-wrap: wrap; gap: 10px;
+    }
+    .footer-bottom a { color: var(--red); }
+
+    /* ─── FLOATING WHATSAPP ─────────────────────────── */
+    .float-wa {
+      position: fixed; bottom: 24px; left: 24px; z-index: 200;
+      width: 56px; height: 56px; border-radius: 50%;
+      background: #25D366;
+      display: flex; align-items: center; justify-content: center;
+      box-shadow: 0 4px 20px rgba(37,211,102,.5);
+      transition: all .2s;
+      animation: pulse-green 2.5s infinite;
+    }
+    .float-wa:hover { transform: scale(1.1); }
+    @keyframes pulse-green {
+      0%,100% { box-shadow: 0 4px 20px rgba(37,211,102,.4); }
+      50%      { box-shadow: 0 4px 30px rgba(37,211,102,.7); }
+    }
+
+    /* ─── TOAST ─────────────────────────────────────── */
+    .toast {
+      position: fixed; bottom: 90px; left: 50%; transform: translateX(-50%);
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 12px 22px;
+      font-size: .9rem; font-weight: 600;
+      z-index: 300;
+      opacity: 0; pointer-events: none;
+      transition: opacity .3s;
+      white-space: nowrap;
+    }
+    .toast.show { opacity: 1; }
+
+    /* ─── RESPONSIVE ────────────────────────────────── */
+    @media (max-width: 900px) {
+      .footer-grid { grid-template-columns: 1fr 1fr; }
+      .contact-grid { grid-template-columns: 1fr; }
+    }
+    @media (max-width: 640px) {
+      nav { display: none; }
+      .menu-toggle { display: flex; align-items: center; }
+      .hero-stats { gap: 24px; }
+      .footer-grid { grid-template-columns: 1fr; }
+      .offers-banner { flex-direction: column; }
+      .section { padding: 56px 0; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- FLOATING WHATSAPP -->
+<a href="https://wa.me/966508071671?text=مرحباً،%20أريد%20الاستفسار%20عن%20الاشتراكات" target="_blank" class="float-wa" title="تواصل عبر واتساب">
+  <svg width="26" height="26" viewBox="0 0 24 24" fill="white"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+</a>
+
+<!-- TOAST -->
+<div class="toast" id="toast">✅ تم إضافة الطلب بنجاح!</div>
+
+<!-- ══════════════════════════════════════════════════
+     HEADER
+══════════════════════════════════════════════════ -->
+<header id="main-header">
+  <div class="container header-inner">
+    <div class="logo" onclick="showPage('home')" style="cursor:pointer">MJEED <span>STORE</span></div>
+    <nav id="main-nav">
+      <a href="#" onclick="showPage('home')"     id="nav-home"     class="active">الرئيسية</a>
+      <a href="#" onclick="showPage('products')" id="nav-products">المنتجات</a>
+      <a href="#" onclick="showPage('warranty')" id="nav-warranty">الضمان</a>
+      <a href="#" onclick="showPage('payment')"  id="nav-payment">طرق الدفع</a>
+      <a href="#" onclick="showPage('contact')"  id="nav-contact">تواصل معنا</a>
+    </nav>
+    <div class="header-actions">
+      <a href="https://wa.me/966508071671" target="_blank" class="whatsapp-btn-sm">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+        واتساب
+      </a>
+      <button class="menu-toggle" onclick="toggleMobileNav()" aria-label="القائمة">☰</button>
+    </div>
+  </div>
+  <div class="mobile-nav" id="mobile-nav">
+    <a href="#" onclick="showPage('home');toggleMobileNav()"     id="mnav-home">🏠 الرئيسية</a>
+    <a href="#" onclick="showPage('products');toggleMobileNav()" id="mnav-products">🛒 المنتجات</a>
+    <a href="#" onclick="showPage('warranty');toggleMobileNav()" id="mnav-warranty">🛡️ الضمان</a>
+    <a href="#" onclick="showPage('payment');toggleMobileNav()"  id="mnav-payment">💳 طرق الدفع</a>
+    <a href="#" onclick="showPage('contact');toggleMobileNav()"  id="mnav-contact">📞 تواصل معنا</a>
+  </div>
+</header>
+
+<!-- ══════════════════════════════════════════════════
+     PAGE: HOME
+══════════════════════════════════════════════════ -->
+<div class="page active" id="page-home">
+
+  <!-- HERO -->
+  <section class="hero">
+    <div class="hero-bg"></div>
+    <div class="hero-grid"></div>
+    <div class="container hero-content">
+      <div class="hero-eyebrow">
+        <svg width="10" height="10" viewBox="0 0 10 10"><circle cx="5" cy="5" r="5" fill="#E50914"/></svg>
+        الأكثر ثقة في المملكة
+      </div>
+      <h1 class="hero-title">
+        اشتراكات رقمية<br><span class="accent">بأفضل الأسعار</span>
+      </h1>
+      <p class="hero-subtitle">
+        نتفليكس، Spotify، IPTV، Disney+ وأكثر — جودة 4K، تسليم فوري، ضمان كامل
+      </p>
+      <div class="hero-cta">
+        <button class="btn btn-red" onclick="showPage('products')">
+          🛒 تصفح المنتجات
+        </button>
+        <a href="https://wa.me/966508071671" target="_blank" class="btn btn-outline">
+          💬 تواصل معنا
+        </a>
+      </div>
+      <div class="hero-stats">
+        <div class="stat"><div class="stat-num">+5000</div><div class="stat-label">عميل راضٍ</div></div>
+        <div class="stat"><div class="stat-num">+10</div><div class="stat-label">منتج متاح</div></div>
+        <div class="stat"><div class="stat-num">24/7</div><div class="stat-label">دعم فوري</div></div>
+        <div class="stat"><div class="stat-num">100%</div><div class="stat-label">ضمان مُعتمد</div></div>
+      </div>
+    </div>
+    <div class="scroll-indicator">
+      <span>اسحب للأسفل</span>
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12l7 7 7-7"/></svg>
+    </div>
+  </section>
+
+  <!-- MARQUEE -->
+  <div class="marquee-wrap">
+    <div class="marquee-track" id="marquee-track"></div>
+  </div>
+
+  <!-- FEATURES STRIP -->
+  <div class="features-strip">
+    <div class="feature-item"><div class="feature-icon">⚡</div><div class="feature-text"><h4>تسليم فوري</h4><p>خلال دقائق بعد الدفع</p></div></div>
+    <div class="feature-item"><div class="feature-icon">🛡️</div><div class="feature-text"><h4>ضمان كامل</h4><p>ضمان خلال مدة الاشتراك</p></div></div>
+    <div class="feature-item"><div class="feature-icon">💎</div><div class="feature-text"><h4>جودة 4K</h4><p>دقة عالية على كل الأجهزة</p></div></div>
+    <div class="feature-item"><div class="feature-icon">🔒</div><div class="feature-text"><h4>دفع آمن</h4><p>STC Pay, UR Pay, USDT</p></div></div>
+    <div class="feature-item"><div class="feature-icon">📞</div><div class="feature-text"><h4>دعم 24/7</h4><p>واتساب وتيليغرام</p></div></div>
+  </div>
+
+  <!-- OFFERS BANNER -->
+  <section class="section" style="padding-top: 60px;">
+    <div class="container">
+      <div class="offers-banner">
+        <div class="offers-tag">🔥 عرض محدود</div>
+        <div class="offers-text">
+          <h3>اشترِ نتفليكس سنوي واحصل على خصم 20%</h3>
+          <p>العرض ساري لفترة محدودة — لا تفوّت الفرصة!</p>
+        </div>
+        <a href="https://wa.me/966508071671?text=أريد%20الاستفادة%20من%20عرض%20نتفليكس%20السنوي" target="_blank" class="btn btn-red">احصل على العرض</a>
+      </div>
+
+      <!-- BEST PRODUCTS -->
+      <h2 class="section-title">أفضل <span>المنتجات</span></h2>
+      <div class="products-grid" id="home-products"></div>
+      <div style="text-align:center; margin-top: 32px;">
+        <button class="btn btn-outline" onclick="showPage('products')">عرض جميع المنتجات ←</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- TESTIMONIALS -->
+  <section class="section" style="background: var(--surface); border-top: 1px solid var(--border);">
+    <div class="container">
+      <h2 class="section-title">آراء <span>عملائنا</span></h2>
+      <div class="testimonials-grid">
+        <div class="testimonial">
+          <div class="testimonial-stars">★★★★★</div>
+          <p class="testimonial-text">خدمة ممتازة وتسليم سريع جداً. اشتريت نتفليكس وجاني خلال دقيقتين. أنصح بهم بشدة!</p>
+          <div class="testimonial-author">
+            <div class="testimonial-avatar">👤</div>
+            <div><div class="testimonial-name">محمد العتيبي</div><div class="testimonial-role">الرياض</div></div>
+          </div>
+        </div>
+        <div class="testimonial">
+          <div class="testimonial-stars">★★★★★</div>
+          <p class="testimonial-text">اشتريت IPTV من شهرين ولحد الآن شغال بدون مشاكل. الدعم يرد بسرعة وما خذّل.</p>
+          <div class="testimonial-author">
+            <div class="testimonial-avatar">👤</div>
+            <div><div class="testimonial-name">خالد السبيعي</div><div class="testimonial-role">جدة</div></div>
+          </div>
+        </div>
+        <div class="testimonial">
+          <div class="testimonial-stars">★★★★☆</div>
+          <p class="testimonial-text">Spotify جاي بالجودة المطلوبة وبدون مشاكل. سعر مناسب ومتجر موثوق. شكراً MJEED!</p>
+          <div class="testimonial-author">
+            <div class="testimonial-avatar">👤</div>
+            <div><div class="testimonial-name">سارة الحربي</div><div class="testimonial-role">الدمام</div></div>
+          </div>
+        </div>
+        <div class="testimonial">
+          <div class="testimonial-stars">★★★★★</div>
+          <p class="testimonial-text">أفضل متجر اشتريت منه. Disney+ يشتغل بكل الأجهزة وجودة 4K رائعة. راح أكرر الشراء.</p>
+          <div class="testimonial-author">
+            <div class="testimonial-avatar">👤</div>
+            <div><div class="testimonial-name">عبدالله المالكي</div><div class="testimonial-role">مكة المكرمة</div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+</div>
+
+<!-- ══════════════════════════════════════════════════
+     PAGE: PRODUCTS
+══════════════════════════════════════════════════ -->
+<div class="page" id="page-products">
+  <section class="section">
+    <div class="container">
+      <h2 class="section-title">جميع <span>المنتجات</span></h2>
+      <div class="filter-tabs" id="filter-tabs">
+        <button class="filter-tab active" data-filter="all">الكل</button>
+        <button class="filter-tab" data-filter="netflix">🎬 نتفليكس</button>
+        <button class="filter-tab" data-filter="iptv">📺 IPTV</button>
+        <button class="filter-tab" data-filter="music">🎵 موسيقى</button>
+        <button class="filter-tab" data-filter="other">✨ أخرى</button>
+      </div>
+      <div class="products-grid" id="all-products"></div>
+    </div>
+  </section>
+</div>
+
+<!-- ══════════════════════════════════════════════════
+     PAGE: WARRANTY
+══════════════════════════════════════════════════ -->
+<div class="page" id="page-warranty">
+  <section class="section">
+    <div class="container">
+      <h2 class="section-title">الضمان <span>والشروط</span></h2>
+      <div class="warranty-grid">
+        <div class="warranty-card">
+          <div class="warranty-icon">🛡️</div>
+          <h3>ضمان الاستمرارية</h3>
+          <p>نضمن استمرارية الخدمة طوال مدة اشتراكك. في حال انقطع الاشتراك نجدد أو نستبدل بدون تكلفة إضافية.</p>
+        </div>
+        <div class="warranty-card">
+          <div class="warranty-icon">⚡</div>
+          <h3>تسليم فوري</h3>
+          <p>يتم تسليم بيانات الاشتراك خلال دقائق من تأكيد الدفع عبر واتساب أو البريد الإلكتروني.</p>
+        </div>
+        <div class="warranty-card">
+          <div class="warranty-icon">🔄</div>
+          <h3>الاستبدال المجاني</h3>
+          <p>إذا واجهت أي مشكلة في الحساب خلال مدة الاشتراك يتم الاستبدال فوراً وبدون رسوم.</p>
+        </div>
+        <div class="warranty-card">
+          <div class="warranty-icon">📞</div>
+          <h3>دعم مستمر</h3>
+          <p>فريق الدعم متاح على مدار الساعة لمساعدتك في أي مشكلة أو استفسار عبر واتساب.</p>
+        </div>
+        <div class="warranty-card">
+          <div class="warranty-icon">🔒</div>
+          <h3>خصوصية تامة</h3>
+          <p>بياناتك الشخصية محمية بالكامل ولا نشاركها مع أي طرف ثالث تحت أي ظرف.</p>
+        </div>
+        <div class="warranty-card">
+          <div class="warranty-icon">💯</div>
+          <h3>جودة مضمونة</h3>
+          <p>جميع الاشتراكات اصلية وتعمل بكامل المزايا المذكورة بما فيها جودة 4K.</p>
+        </div>
+      </div>
+
+      <div class="terms-box">
+        <h3>📋 الشروط والأحكام</h3>
+        <div class="terms-list">
+          <div class="term-item"><div class="term-num">١</div><div>لا يُسمح بمشاركة بيانات الحساب مع أشخاص آخرين خارج الاتفاق المبدئي.</div></div>
+          <div class="term-item"><div class="term-num">٢</div><div>الاشتراكات غير قابلة للاسترداد النقدي بعد التفعيل إلا في حالة خلل من المتجر.</div></div>
+          <div class="term-item"><div class="term-num">٣</div><div>يُمنع استخدام الاشتراك لأغراض تجارية أو إعادة البيع دون إذن كتابي.</div></div>
+          <div class="term-item"><div class="term-num">٤</div><div>في حالة تغيير كلمة المرور من طرف العميل يُعتبر الضمان لاغياً.</div></div>
+          <div class="term-item"><div class="term-num">٥</div><div>يبدأ الضمان من تاريخ تسليم بيانات الاشتراك وينتهي مع انتهاء مدته.</div></div>
+          <div class="term-item"><div class="term-num">٦</div><div>المتجر غير مسؤول عن أي انقطاع ناتج عن مشكلة في اتصال الإنترنت لدى العميل.</div></div>
+          <div class="term-item"><div class="term-num">٧</div><div>يحق للمتجر تعديل الأسعار في أي وقت مع الإبقاء على الاشتراكات النشطة كما هي.</div></div>
+        </div>
+      </div>
+    </div>
+  </section>
+</div>
+
+<!-- ══════════════════════════════════════════════════
+     PAGE: PAYMENT
+══════════════════════════════════════════════════ -->
+<div class="page" id="page-payment">
+  <section class="section">
+    <div class="container">
+      <h2 class="section-title">طرق <span>الدفع</span></h2>
+      <div class="payment-cards">
+        <div class="payment-card">
+          <div class="payment-logo">📱</div>
+          <h3>STC Pay</h3>
+          <p>ادفع بسهولة عبر تطبيق STC Pay. آمن وسريع ومتاح لجميع عملاء الاتصالات السعودية.</p>
+          <div style="margin-top:14px; font-size:.85rem; color: var(--muted);">رقم المحفظة: <strong style="color:var(--text)">05X-XXX-XXXX</strong></div>
+        </div>
+        <div class="payment-card">
+          <div class="payment-logo">💳</div>
+          <h3>UR Pay</h3>
+          <p>تحويل مريح عبر منصة UR Pay. أضمن الدفع الفوري وابدأ اشتراكك مباشرةً.</p>
+          <div style="margin-top:14px; font-size:.85rem; color: var(--muted);">رقم المحفظة: <strong style="color:var(--text)">urpay/mjeedstore</strong></div>
+        </div>
+        <div class="payment-card">
+          <div class="payment-logo">₿</div>
+          <h3>USDT (TRC20)</h3>
+          <p>ندعم الدفع بالعملات الرقمية USDT عبر شبكة TRC20 للعملاء الدوليين والمحليين.</p>
+          <div style="margin-top:14px; font-size:.75rem; color: var(--muted); word-break:break-all;">العنوان: <strong style="color:var(--text)">T...XXXXXXXXXXXX</strong></div>
+        </div>
+      </div>
+
+      <div class="payment-steps">
+        <h3>🚀 خطوات الشراء</h3>
+        <div class="step-list">
+          <div class="step">
+            <div class="step-num">١</div>
+            <div class="step-text">
+              <h4>اختر المنتج</h4>
+              <p>تصفح قائمة المنتجات واختر الاشتراك المناسب لك.</p>
+            </div>
+          </div>
+          <div class="step">
+            <div class="step-num">٢</div>
+            <div class="step-text">
+              <h4>تواصل معنا عبر واتساب</h4>
+              <p>اضغط على زر "اطلب الآن" وسيُفتح واتساب برسالة جاهزة.</p>
+            </div>
+          </div>
+          <div class="step">
+            <div class="step-num">٣</div>
+            <div class="step-text">
+              <h4>أتمم عملية الدفع</h4>
+              <p>أرسل المبلغ عبر إحدى طرق الدفع المتاحة وأرسل لقطة الشاشة.</p>
+            </div>
+          </div>
+          <div class="step">
+            <div class="step-num">٤</div>
+            <div class="step-text">
+              <h4>استلم اشتراكك فوراً</h4>
+              <p>بعد تأكيد الدفع سيُسلَّم الاشتراك خلال دقائق عبر واتساب.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div style="background: var(--surface); border: 1px solid rgba(229,9,20,.25); border-radius: var(--radius); padding: 24px; margin-top: 24px; text-align:center;">
+        <p style="font-size:.95rem; color: var(--muted);">هل تحتاج مساعدة في عملية الدفع؟</p>
+        <a href="https://wa.me/966508071671?text=أحتاج%20مساعدة%20في%20الدفع" target="_blank" class="btn btn-whatsapp" style="max-width:300px; margin: 14px auto 0;">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+          تواصل مع الدعم
+        </a>
+      </div>
+    </div>
+  </section>
+</div>
+
+<!-- ══════════════════════════════════════════════════
+     PAGE: CONTACT
+══════════════════════════════════════════════════ -->
+<div class="page" id="page-contact">
+  <section class="section">
+    <div class="container">
+      <h2 class="section-title">تواصل <span>معنا</span></h2>
+      <div class="contact-grid">
+        <div class="contact-info">
+          <div class="contact-item">
+            <div class="contact-item-icon">💬</div>
+            <div>
+              <h4>واتساب</h4>
+              <p>+966 50 000 0000 — متاح 24/7</p>
+            </div>
+          </div>
+          <div class="contact-item">
+            <div class="contact-item-icon">📱</div>
+            <div>
+              <h4>تيليغرام</h4>
+              <p>@mjeedstore — للاستفسارات السريعة</p>
+            </div>
+          </div>
+          <div class="contact-item">
+            <div class="contact-item-icon">📧</div>
+            <div>
+              <h4>البريد الإلكتروني</h4>
+              <p>support@mjeedstore.com</p>
+            </div>
+          </div>
+          <div class="contact-item">
+            <div class="contact-item-icon">🕐</div>
+            <div>
+              <h4>أوقات الدعم</h4>
+              <p>على مدار الساعة طوال أيام الأسبوع</p>
+            </div>
+          </div>
+          <a href="https://wa.me/966508071671" target="_blank" class="btn btn-whatsapp">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+            تحدث معنا الآن على واتساب
+          </a>
+        </div>
+
+        <div class="contact-form-box">
+          <h3>📨 أرسل رسالة</h3>
+          <div class="form-group">
+            <label>الاسم الكامل</label>
+            <input type="text" placeholder="أدخل اسمك" />
+          </div>
+          <div class="form-group">
+            <label>رقم الواتساب</label>
+            <input type="tel" placeholder="+966 5XX XXX XXXX" />
+          </div>
+          <div class="form-group">
+            <label>موضوع الرسالة</label>
+            <select>
+              <option value="">اختر الموضوع</option>
+              <option>استفسار عن منتج</option>
+              <option>مشكلة في اشتراك</option>
+              <option>طلب جديد</option>
+              <option>الدفع والفواتير</option>
+              <option>أخرى</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>الرسالة</label>
+            <textarea rows="4" placeholder="اكتب رسالتك هنا..."></textarea>
+          </div>
+          <button class="btn btn-red" style="width:100%; justify-content:center;" onclick="sendContactForm()">
+            إرسال عبر واتساب ←
+          </button>
+        </div>
+      </div>
+    </div>
+  </section>
+</div>
+
+<!-- ══════════════════════════════════════════════════
+     FOOTER
+══════════════════════════════════════════════════ -->
+<footer>
+  <div class="container">
+    <div class="footer-grid">
+      <div class="footer-brand">
+        <div class="logo">MJEED <span>STORE</span></div>
+        <p>متجرك الأول للاشتراكات الرقمية. جودة عالية، أسعار منافسة، وضمان كامل على جميع المنتجات.</p>
+        <div class="footer-socials">
+          <a href="#" class="social-btn">📱</a>
+          <a href="#" class="social-btn">💬</a>
+          <a href="#" class="social-btn">📧</a>
+        </div>
+      </div>
+      <div class="footer-col">
+        <h4>الصفحات</h4>
+        <a href="#" onclick="showPage('home')">الرئيسية</a>
+        <a href="#" onclick="showPage('products')">المنتجات</a>
+        <a href="#" onclick="showPage('warranty')">الضمان والشروط</a>
+        <a href="#" onclick="showPage('payment')">طرق الدفع</a>
+        <a href="#" onclick="showPage('contact')">تواصل معنا</a>
+      </div>
+      <div class="footer-col">
+        <h4>المنتجات</h4>
+        <a href="#" onclick="showPage('products')">Netflix 4K</a>
+        <a href="#" onclick="showPage('products')">IPTV 4K</a>
+        <a href="#" onclick="showPage('products')">Spotify Premium</a>
+        <a href="#" onclick="showPage('products')">Disney+</a>
+        <a href="#" onclick="showPage('products')">YouTube Premium</a>
+      </div>
+      <div class="footer-col">
+        <h4>التواصل</h4>
+        <a href="https://wa.me/966508071671" target="_blank">واتساب</a>
+        <a href="#">تيليغرام</a>
+        <a href="#">البريد الإلكتروني</a>
+        <div style="margin-top:12px;">
+          <div style="font-size:.8rem; color: var(--muted);">طرق الدفع</div>
+          <div style="font-size:1.4rem; margin-top:6px; letter-spacing:.1em;">📱 💳 ₿</div>
+        </div>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <span>© 2025 MJEED STORE — جميع الحقوق محفوظة</span>
+      <span>صُنع بـ ❤️ للعميل العربي</span>
+    </div>
+  </div>
+</footer>
+
+<!-- ══════════════════════════════════════════════════
+     JAVASCRIPT
+══════════════════════════════════════════════════ -->
+<script>
+  /* ─── PRODUCTS DATA ──────────────────────────────── */
+  const PRODUCTS = [
+    {
+      id: 1, name: 'Netflix 4K شهري', category: 'netflix',
+      price: 35, oldPrice: 55, currency: 'ريال',
+      period: '/شهر', emoji: '🎬',
+      bg: 'linear-gradient(135deg,#1a0000,#2d0000)',
+      glow: 'rgba(229,9,20,.35)',
+      badge: { text: 'الأكثر طلباً', type: 'badge-red' },
+      stars: 5,
+      desc: 'شاهد جميع المحتوى بجودة 4K مع نتفليكس الشهرية. شاشتان متزامنتان.',
+      waMsg: 'أريد الاشتراك في Netflix 4K الشهري بسعر 35 ريال'
+    },
+    {
+      id: 2, name: 'Netflix 4K سنوي', category: 'netflix',
+      price: 299, oldPrice: 420, currency: 'ريال',
+      period: '/سنة', emoji: '🎬',
+      bg: 'linear-gradient(135deg,#1a0000,#3d0000)',
+      glow: 'rgba(229,9,20,.3)',
+      badge: { text: 'وفّر 29%', type: 'badge-gold' },
+      stars: 5,
+      desc: 'اشتراك سنوي كامل بخصم ضخم. 4K + تنزيل + عدة شاشات.',
+      waMsg: 'أريد الاشتراك في Netflix 4K السنوي بسعر 299 ريال'
+    },
+    {
+      id: 3, name: 'IPTV 4K شهري', category: 'iptv',
+      price: 45, oldPrice: 70, currency: 'ريال',
+      period: '/شهر', emoji: '📺',
+      bg: 'linear-gradient(135deg,#001a2d,#002d4d)',
+      glow: 'rgba(0,120,212,.3)',
+      badge: { text: '+20000 قناة', type: 'badge-red' },
+      stars: 5,
+      desc: 'أكثر من 20,000 قناة عربية وعالمية بجودة 4K و FHD.',
+      waMsg: 'أريد الاشتراك في IPTV 4K الشهري بسعر 45 ريال'
+    },
+    {
+      id: 4, name: 'IPTV 4K سنوي', category: 'iptv',
+      price: 399, oldPrice: 540, currency: 'ريال',
+      period: '/سنة', emoji: '📺',
+      bg: 'linear-gradient(135deg,#001520,#003060)',
+      glow: 'rgba(0,120,212,.25)',
+      badge: { text: 'اقتصادي', type: 'badge-gold' },
+      stars: 5,
+      desc: 'اشتراك سنوي بأفضل سعر. +20000 قناة + VOD ضخم.',
+      waMsg: 'أريد الاشتراك في IPTV 4K السنوي بسعر 399 ريال'
+    },
+    {
+      id: 5, name: 'Spotify Premium', category: 'music',
+      price: 25, oldPrice: 40, currency: 'ريال',
+      period: '/شهر', emoji: '🎵',
+      bg: 'linear-gradient(135deg,#001a0d,#003320)',
+      glow: 'rgba(29,185,84,.3)',
+      badge: null,
+      stars: 5,
+      desc: 'موسيقى بلا حدود، بدون إعلانات، جودة عالية في أي مكان.',
+      waMsg: 'أريد الاشتراك في Spotify Premium بسعر 25 ريال'
+    },
+    {
+      id: 6, name: 'Disney+ شهري', category: 'other',
+      price: 30, oldPrice: 45, currency: 'ريال',
+      period: '/شهر', emoji: '🏰',
+      bg: 'linear-gradient(135deg,#00001a,#00002d)',
+      glow: 'rgba(0,100,220,.3)',
+      badge: null,
+      stars: 4,
+      desc: 'Marvel, Star Wars, Pixar وأكثر. محتوى عائلي لا ينتهي.',
+      waMsg: 'أريد الاشتراك في Disney+ الشهري بسعر 30 ريال'
+    },
+    {
+      id: 7, name: 'YouTube Premium', category: 'other',
+      price: 28, oldPrice: 42, currency: 'ريال',
+      period: '/شهر', emoji: '▶️',
+      bg: 'linear-gradient(135deg,#1a0000,#1a0a00)',
+      glow: 'rgba(255,0,0,.25)',
+      badge: null,
+      stars: 4,
+      desc: 'يوتيوب بدون إعلانات + YouTube Music + تشغيل خلفي.',
+      waMsg: 'أريد الاشتراك في YouTube Premium بسعر 28 ريال'
+    },
+    {
+      id: 8, name: 'Shahid VIP سنوي', category: 'other',
+      price: 149, oldPrice: 210, currency: 'ريال',
+      period: '/سنة', emoji: '🌙',
+      bg: 'linear-gradient(135deg,#1a0c00,#2d1500)',
+      glow: 'rgba(255,140,0,.25)',
+      badge: { text: 'عربي 100%', type: 'badge-gold' },
+      stars: 4,
+      desc: 'أقوى المحتوى العربي، مسلسلات حصرية وأفلام عربية ومصرية.',
+      waMsg: 'أريد الاشتراك في Shahid VIP السنوي بسعر 149 ريال'
+    },
+    {
+      id: 9, name: 'OSN+ شهري', category: 'other',
+      price: 55, oldPrice: 80, currency: 'ريال',
+      period: '/شهر', emoji: '🌍',
+      bg: 'linear-gradient(135deg,#0a0a1a,#1a0028)',
+      glow: 'rgba(150,0,200,.25)',
+      badge: null,
+      stars: 4,
+      desc: 'محتوى HBO، ديزني، كرة قدم عالمية وأكثر على OSN.',
+      waMsg: 'أريد الاشتراك في OSN+ الشهري بسعر 55 ريال'
+    },
+    {
+      id: 10, name: 'باقة VIP الكاملة', category: 'other',
+      price: 149, oldPrice: 240, currency: 'ريال',
+      period: '/شهر', emoji: '👑',
+      bg: 'linear-gradient(135deg,#1a1000,#3a2000)',
+      glow: 'rgba(245,197,24,.3)',
+      badge: { text: '🔥 الأفضل قيمة', type: 'badge-gold' },
+      stars: 5,
+      desc: 'Netflix + IPTV + Spotify في باقة واحدة بسعر خارق.',
+      waMsg: 'أريد الاشتراك في الباقة VIP الكاملة بسعر 149 ريال'
+    }
+  ];
+
+  /* ─── RENDER PRODUCT CARD ────────────────────────── */
+  function renderCard(p) {
+    const stars = '★'.repeat(p.stars) + '☆'.repeat(5 - p.stars);
+    const badge = p.badge
+      ? `<div class="card-badge"><span class="badge ${p.badge.type}">${p.badge.text}</span></div>`
+      : '';
+    const oldPrice = p.oldPrice
+      ? `<span class="card-old-price">${p.oldPrice} ${p.currency}</span>`
+      : '';
+    const waLink = `https://wa.me/966508071671?text=${encodeURIComponent(p.waMsg)}`;
+    return `
+      <div class="card" data-cat="${p.category}">
+        ${badge}
+        <div class="card-img" style="background:${p.bg}">
+          <span style="position:relative;z-index:1;font-size:3.5rem">${p.emoji}</span>
+          <div class="card-img-overlay" style="--card-color:${p.glow}"></div>
+        </div>
+        <div class="card-body">
+          <div class="card-top">
+            <div class="card-name">${p.name}</div>
+          </div>
+          <div class="card-desc">${p.desc}</div>
+          <div class="card-price-row">
+            <span class="card-price">${p.price}</span>
+            <span class="card-price-unit">${p.currency}${p.period}</span>
+            ${oldPrice}
+          </div>
+          <div class="card-stars">${stars} <span style="color:var(--muted);font-size:.78rem">(${p.stars}.0)</span></div>
+          <a href="${waLink}" target="_blank" class="btn btn-whatsapp">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+            اطلب الآن
+          </a>
+        </div>
+      </div>
+    `;
+  }
+
+  /* ─── INIT PRODUCTS ──────────────────────────────── */
+  function initProducts() {
+    // Home: first 6 products
+    const homeGrid = document.getElementById('home-products');
+    PRODUCTS.slice(0, 6).forEach(p => { homeGrid.innerHTML += renderCard(p); });
+
+    // All products
+    const allGrid = document.getElementById('all-products');
+    PRODUCTS.forEach(p => { allGrid.innerHTML += renderCard(p); });
+  }
+
+  /* ─── FILTER TABS ────────────────────────────────── */
+  function initFilter() {
+    const tabs = document.querySelectorAll('.filter-tab');
+    tabs.forEach(tab => {
+      tab.addEventListener('click', () => {
+        tabs.forEach(t => t.classList.remove('active'));
+        tab.classList.add('active');
+        const filter = tab.dataset.filter;
+        const cards = document.querySelectorAll('#all-products .card');
+        cards.forEach(card => {
+          card.style.display = (filter === 'all' || card.dataset.cat === filter) ? '' : 'none';
+        });
+      });
+    });
+  }
+
+  /* ─── MARQUEE ────────────────────────────────────── */
+  function initMarquee() {
+    const items = [
+      { icon: '🎬', text: 'Netflix 4K' },
+      { icon: '📺', text: 'IPTV +20000 قناة' },
+      { icon: '🎵', text: 'Spotify Premium' },
+      { icon: '🏰', text: 'Disney+' },
+      { icon: '▶️', text: 'YouTube Premium' },
+      { icon: '🌙', text: 'Shahid VIP' },
+      { icon: '⚡', text: 'تسليم فوري' },
+      { icon: '🛡️', text: 'ضمان كامل' },
+      { icon: '💳', text: 'STC Pay' },
+      { icon: '₿', text: 'USDT مقبول' },
+    ];
+    const track = document.getElementById('marquee-track');
+    const doubled = [...items, ...items];
+    doubled.forEach(item => {
+      const div = document.createElement('div');
+      div.className = 'marquee-item';
+      div.innerHTML = `<span style="font-size:1.1rem">${item.icon}</span><span>${item.text}</span><span style="color:var(--red);margin-right:8px">•</span>`;
+      track.appendChild(div);
+    });
+  }
+
+  /* ─── PAGE NAVIGATION ────────────────────────────── */
+  function showPage(id) {
+    document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+    document.getElementById('page-' + id).classList.add('active');
+
+    document.querySelectorAll('nav a').forEach(a => {
+      a.classList.remove('active');
+      if (a.id === 'nav-' + id) a.classList.add('active');
+    });
+    document.querySelectorAll('.mobile-nav a').forEach(a => {
+      a.classList.remove('active');
+      if (a.id === 'mnav-' + id) a.classList.add('active');
+    });
+
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+    return false;
+  }
+
+  /* ─── MOBILE NAV ─────────────────────────────────── */
+  function toggleMobileNav() {
+    document.getElementById('mobile-nav').classList.toggle('open');
+  }
+
+  /* ─── CONTACT FORM ───────────────────────────────── */
+  function sendContactForm() {
+    const name   = document.querySelector('#page-contact input[type="text"]').value || 'غير محدد';
+    const phone  = document.querySelector('#page-contact input[type="tel"]').value  || '';
+    const topic  = document.querySelector('#page-contact select').value             || 'عام';
+    const msg    = document.querySelector('#page-contact textarea').value            || '';
+    const text   = `مرحباً MJEED STORE\n\nالاسم: ${name}\nالرقم: ${phone}\nالموضوع: ${topic}\nالرسالة: ${msg}`;
+    window.open(`https://wa.me/966508071671?text=${encodeURIComponent(text)}`, '_blank');
+  }
+
+  /* ─── TOAST ──────────────────────────────────────── */
+  function showToast(msg) {
+    const t = document.getElementById('toast');
+    t.textContent = msg;
+    t.classList.add('show');
+    setTimeout(() => t.classList.remove('show'), 3000);
+  }
+
+  /* ─── INIT ───────────────────────────────────────── */
+  document.addEventListener('DOMContentLoaded', () => {
+    initProducts();
+    initMarquee();
+    initFilter();
+  });
+</script>
+</body>
+</html>
