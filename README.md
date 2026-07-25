@@ -1,6 +1,6 @@
 # MJEEDSTORE
 
-مشروع تعليمي لمتجر إلكتروني متخصص في بيع اشتراكات .
+مشروع تعليمي لمتجر إلكتروني .
 
 **الموقع الحي:** [https://mjedstore.infinityfree.me](https://mjedstore.infinityfree.me)
 
