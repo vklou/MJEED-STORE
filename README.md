@@ -1,37 +1,32 @@
 # MJEED STORE
 
-متجر إلكتروني مع لوحة تحكم لإدارة المنتجات والطلبات.
+An online store with an admin dashboard for products and orders.
 
-**الموقع الحي:** [https://mjedstore.infinityfree.me](https://mjedstore.infinityfree.me)
+**Live demo:** [https://mjedstore.infinityfree.me](https://mjedstore.infinityfree.me)
 
 ---
 
-## فكرة المشروع
+## Idea
 
-بناء متجر سهل يعرض المنتجات، يستقبل الطلب مع إيصال التحويل، ويتابع حالة الطلب من لوحة إدارية.
+A simple store that lists products, accepts orders with a bank-transfer receipt, and tracks order status from an admin panel.
 
-## المميزات
+## Features
 
-- عرض المنتجات من قاعدة البيانات
-- سلة مشتريات
-- إرسال طلب مع رفع إيصال التحويل
-- تتبع حالة الطلب
-- لوحة إدارة للطلبات والمنتجات
-- إضافة وتعديل الأسعار
+- Products loaded from the database
+- Shopping cart
+- Place an order and upload a transfer receipt
+- Order tracking
+- Admin dashboard for orders and products
+- Add and update prices
 
-## التقنيات
+## Tech stack
 
 - PHP
 - MySQL
 - HTML / CSS / JavaScript
 
-## هيكلة العمل
+## Setup
 
-1. رفع الملفات على الخادم أو خادم محلي (XAMPP / استضافة)
-2. إنشاء قاعدة البيانات وربطها في `config.php`
-3. فتح `index.php` من المتصفح
-
-## المطور
-
-**عبدالمجيد محمد أحمد عسيري**  
-[LinkedIn](https://www.linkedin.com/in/abdulmjeed-asiri-b82980291)
+1. Upload the files to a host or a local server (XAMPP / shared hosting)
+2. Create the database and connect it in `config.php`
+3. Open `index.php` in the browser
