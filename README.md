@@ -1,4 +1,4 @@
-# MJEED STORE
+# Store Dashboard
 
 An online store with an admin dashboard for products and orders.
 
